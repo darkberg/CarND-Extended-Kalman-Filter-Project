@@ -1,30 +1,40 @@
 #ifndef KALMAN_FILTER_H_
 #define KALMAN_FILTER_H_
 #include "Eigen/Dense"
-
+#include "tools.h"
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-class KalmanFilter {
+
+class KalmanFilter
+{
 public:
 
   // state vector
-  VectorXd x_;
+  Eigen::VectorXd x_;
 
   // state covariance matrix
-  MatrixXd P_;
+  Eigen::MatrixXd P_;
 
   // state transistion matrix
-  MatrixXd F_;
+  Eigen::MatrixXd F_;
 
   // process covariance matrix
-  MatrixXd Q_;
+  Eigen::MatrixXd Q_;
 
-  // measurement matrix
-  MatrixXd H_;
+  // Laser measurement mapping matrix
+  Eigen::MatrixXd H_;
 
-  // measurement covariance matrix
-  MatrixXd R_;
+  // Laser measurement covariance matrix
+  Eigen::MatrixXd R_laser_;
+
+  // Radar measurement covariance matrix
+  Eigen::MatrixXd R_radar_;
+
+  float noise_ax = 9.0;
+  float noise_ay = 9.0;
+
+  Tools tools;
 
   /**
    * Constructor
@@ -42,11 +52,12 @@ public:
    * @param P_in Initial state covariance
    * @param F_in Transition matrix
    * @param H_in Measurement matrix
-   * @param R_in Measurement covariance matrix
+   * @param R_Laser_in Laser measurement covariance matrix
+   * @param R_Radar_in Radar measurement covariance matrix
    * @param Q_in Process covariance matrix
    */
-  void Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
-      MatrixXd &H_in, MatrixXd &R_in, MatrixXd &Q_in);
+  void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in, Eigen::MatrixXd &F_in,
+      Eigen::MatrixXd &H_in, MatrixXd &R_Laser_in, MatrixXd &R_Radar_in, Eigen::MatrixXd &Q_in);
 
   /**
    * Prediction Predicts the state and the state covariance
@@ -59,14 +70,13 @@ public:
    * Updates the state by using standard Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void Update(const VectorXd &z);
+  void Update(const Eigen::VectorXd &z);
 
   /**
    * Updates the state by using Extended Kalman Filter equations
    * @param z The measurement at k+1
    */
-  void UpdateEKF(const VectorXd &z);
-
+  void UpdateEKF(const Eigen::VectorXd &z);
 
 };
 
